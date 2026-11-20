@@ -11,7 +11,12 @@ export function createContextInjectionPlugin(): Plugin {
   return {
     name: 'slidev:context-injection',
     transform: {
-      // TODO: static filter
+      filter: {
+        id: {
+          include: /\.vue$/,
+          exclude: [/\/@slidev\/client\//, /\/packages\/client\//],
+        },
+      },
       async handler(code, id) {
         if (!id.endsWith('.vue') || id.includes('/@slidev/client/') || id.includes('/packages/client/'))
           return
