@@ -3,6 +3,9 @@ import type { ShikiTransformer } from 'shiki'
 import { isTruthy } from '@antfu/utils'
 import { fromAsyncCodeToHtml } from '@shikijs/markdown-it/async'
 
+// Same trigger as Twoslash's `explicitTrigger`
+const RE_TWOSLASH = /\btwoslash\b/
+
 export default async function MarkdownItShiki({ data: { config }, mode, utils: { shiki, shikiOptions } }: ResolvedSlidevOptions) {
   async function getTwoslashTransformer() {
     const [, , { transformerTwoslash }] = await Promise.all([
@@ -25,21 +28,35 @@ export default async function MarkdownItShiki({ data: { config }, mode, utils: {
     })
   }
 
-  const transformers = [
-    ...shikiOptions.transformers || [],
-    (config.twoslash === true || config.twoslash === mode) && await getTwoslashTransformer(),
-    (config.twoslash === true || config.twoslash === mode) && transformerTwoslashConditional(),
-    {
-      pre(pre) {
-        this.addClassToHast(pre, 'slidev-code')
-        delete pre.properties.tabindex
-      },
-    } satisfies ShikiTransformer,
-  ].filter(isTruthy) as ShikiTransformer[]
+  const twoslashEnabled = config.twoslash === true || config.twoslash === mode
+  // Twoslash loads TypeScript, so it is set up on the first code block that asks for it
+  let twoslashTransformers: Promise<ShikiTransformer[]> | undefined
 
-  return fromAsyncCodeToHtml(shiki.codeToHtml, {
+  const slidevCodeTransformer: ShikiTransformer = {
+    pre(pre) {
+      this.addClassToHast(pre, 'slidev-code')
+      delete pre.properties.tabindex
+    },
+  }
+
+  return fromAsyncCodeToHtml(async (code, options) => {
+    const twoslash = twoslashEnabled && RE_TWOSLASH.test(String(options.meta?.__raw ?? ''))
+      ? await (twoslashTransformers ??= getTwoslashTransformer().then(t => [
+          t,
+          transformerTwoslashConditional(),
+        ]))
+      : []
+    return shiki.codeToHtml(code, {
+      ...options,
+      transformers: [
+        ...options.transformers || [],
+        ...twoslash,
+        slidevCodeTransformer,
+      ],
+    })
+  }, {
     ...shikiOptions,
-    transformers,
+    transformers: shikiOptions.transformers?.filter(isTruthy),
   })
 }
 
