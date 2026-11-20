@@ -166,8 +166,8 @@ export function createConfigPlugin(options: ResolvedSlidevOptions): Plugin {
                 return DEFAULT
               },
               manualChunks(id) {
-                if (id.startsWith('/@slidev-monaco-types/') || id.includes('/@slidev/monaco-types') || id.endsWith('?monaco-types&raw'))
-                  return 'monaco/bundled-types'
+                if (id.includes('/@shikijs/langs/') || id.includes('/@shikijs/themes/') || id.includes('/shiki/dist/langs') || id.includes('/shiki/dist/themes'))
+                  return undefined
                 if (id.includes('/shiki/') || id.includes('/@shikijs/'))
                   return `modules/shiki`
                 if (id.startsWith('~icons/'))
