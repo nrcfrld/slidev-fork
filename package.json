@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "turbo run build --filter=\"./packages/*\"",
+    "budget": "node scripts/bundle-budget.mjs",
     "ci:publish": "zx scripts/publish.mjs",
     "cy": "cypress open",
     "cy:fixture": "pnpm -C cypress/fixtures/basic run dev",
