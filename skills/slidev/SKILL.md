@@ -77,6 +77,7 @@ Presenter notes go here
 | Layouts | Built-in slide layouts | [core-layouts](references/core-layouts.md) |
 | Exporting | PDF, PPTX, PNG export options | [core-exporting](references/core-exporting.md) |
 | Hosting | Build and deploy to various platforms | [core-hosting](references/core-hosting.md) |
+| Workspace | Many decks in one project, shown as a grid | [core-workspace](references/core-workspace.md) |
 | Global Context | $nav, $slidev, composables API | [core-global-context](references/core-global-context.md) |
 
 ## Feature Reference
