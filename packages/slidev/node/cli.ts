@@ -428,6 +428,100 @@ cli.command(
 )
 
 cli.command(
+  'workspace',
+  'Work with a folder of decks shown as a grid',
+  args => args
+    .command(
+      '$0 [root]',
+      'Start the deck grid. Each deck starts its own dev server when opened',
+      args => workspaceOptions(args)
+        .option('port', {
+          alias: 'p',
+          type: 'number',
+          describe: 'port of the deck grid. Decks use the following ports',
+        })
+        .option('open', {
+          alias: 'o',
+          default: false,
+          type: 'boolean',
+          describe: 'open in browser',
+        })
+        .option('log', {
+          default: 'warn',
+          type: 'string',
+          choices: ['error', 'warn', 'info', 'silent'],
+          describe: 'log level of the deck servers',
+        })
+        .strict()
+        .help(),
+      async ({ root, dir, theme, port: userPort, open, log }) => {
+        const { startWorkspaceServer } = await import('./workspace/serve')
+        const port = userPort || await getPort({
+          port: 3030,
+          random: false,
+          portRange: [3030, 4000],
+          host: 'localhost',
+        })
+        await startWorkspaceServer({ root, dir, theme, port, open, log })
+      },
+    )
+    .command(
+      'build [root]',
+      'Build every deck and the deck grid into one hostable site',
+      args => exportOptions(workspaceOptions(args))
+        .option('out', {
+          alias: 'o',
+          type: 'string',
+          default: 'dist',
+          describe: 'output dir, relative to the workspace root',
+        })
+        .option('base', {
+          type: 'string',
+          default: '/',
+          describe: 'base of the site. Each deck is served at <base><deck>/',
+        })
+        .option('covers', {
+          type: 'boolean',
+          default: true,
+          describe: 'capture each deck\'s first slide as its cover (needs playwright-chromium)',
+        })
+        .option('download', {
+          alias: 'd',
+          type: 'boolean',
+          describe: 'allow download as PDF',
+        })
+        .option('without-notes', {
+          type: 'boolean',
+          describe: 'exclude speaker notes from the built output',
+        })
+        .option('router-mode', {
+          type: 'string',
+          choices: ['hash', 'history', 'memory'],
+          describe: 'override routerMode of every deck',
+        })
+        .option('inspect', {
+          default: false,
+          type: 'boolean',
+          describe: 'enable the inspect plugin for debugging',
+        })
+        .strict()
+        .help(),
+      async (args) => {
+        const { resolveWorkspace } = await import('./workspace')
+        const { buildWorkspace } = await import('./workspace/build')
+        const workspace = await resolveWorkspace(args.root, { dir: args.dir })
+        if (!workspace.decks.length) {
+          console.error(yellow(`  No decks found in ${workspace.dir}. Each deck needs its own folder with a slides.md file.`))
+          process.exitCode = 1
+          return
+        }
+        await buildWorkspace(workspace, args as any)
+      },
+    )
+    .strict(),
+)
+
+cli.command(
   'format [entry..]',
   'Format the markdown file',
   args => commonOptions(args)
@@ -653,6 +747,24 @@ function commonOptions(args: Argv<object>) {
       alias: 't',
       type: 'string',
       describe: 'override theme',
+    })
+}
+
+function workspaceOptions<T>(args: Argv<T>) {
+  return args
+    .positional('root', {
+      default: '.',
+      type: 'string',
+      describe: 'workspace folder',
+    })
+    .option('dir', {
+      type: 'string',
+      describe: 'folder with one sub-folder per deck, relative to the root. Defaults to "decks"',
+    })
+    .option('theme', {
+      alias: 't',
+      type: 'string',
+      describe: 'override theme of every deck',
     })
 }
 

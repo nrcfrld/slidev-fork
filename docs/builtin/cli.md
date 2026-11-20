@@ -61,6 +61,33 @@ Options:
 - `--theme`, `-t` (`string`): override theme
 - `--without-notes` (`boolean`, default: `false`): exclude speaker notes from the SPA
 
+## `slidev workspace [root]` {#workspace}
+
+Open a grid of every deck in a workspace. Each deck starts its own dev server when you open it. See <LinkInline link="guide/workspace" /> for more details.
+
+- `[root]` (`string`, default: `.`): path to the workspace folder.
+
+Options:
+
+- `--port`, `-p` (`number`, default: `3030`): port of the grid. Decks use the following ports
+- `--open`, `-o` (`boolean`, default: `false`): open in the browser
+- `--dir` (`string`, default: `decks`): folder with one sub-folder per deck
+- `--theme`, `-t` (`string`): override the theme of every deck
+- `--log` (`'error', 'warn', 'info', 'silent'`, default: `'warn'`): log level of the deck servers
+
+## `slidev workspace build [root]` {#workspace-build}
+
+Build every deck and the grid into one hostable site.
+
+- `[root]` (`string`, default: `.`): path to the workspace folder.
+
+Options:
+
+- `--out`, `-o` (`string`, default: `dist`): output directory
+- `--base` (`string`, default: `/`): base of the site. Each deck is served at `<base><deck>/`
+- `--covers` (`boolean`, default: `true`): capture each deck's first slide as its cover (needs `playwright-chromium`)
+- `--dir`, `--theme`, `--download`, `--without-notes`, `--router-mode`: same as for [`slidev build`](#build), applied to every deck
+
 ## `slidev export [...entry]` {#export}
 
 Export slides to PDF (or other format). See <LinkInline link="guide/exporting" /> for more details.

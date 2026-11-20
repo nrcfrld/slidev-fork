@@ -40,6 +40,10 @@ export const Guides = [
     link: '/guide/hosting',
   },
   {
+    text: 'Workspace',
+    link: '/guide/workspace',
+  },
+  {
     text: 'Work with AI',
     link: '/guide/work-with-ai',
   },
