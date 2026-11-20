@@ -30,6 +30,9 @@ export default function MarkdownItVDrag(md: MarkdownExit, markdownTransformMap: 
 
   const _parse = md.parse
   md.parse = function (src, env) {
+    // Only tokens that contain "drag" are rewritten, so skip the source map otherwise
+    if (!src.includes('drag'))
+      return _parse.call(this, src, env)
     const smc = getSourceMapConsumer(env?.id)
     // A generated line past the file (the exclusive end of a block that ends
     // the slide) is unmapped. `null - 1` is -1, and `Math.max(start + 1, -1)`
