@@ -1,16 +1,20 @@
 import { parseTimeString } from '@slidev/parser/utils'
 import { useInterval } from '@vueuse/core'
-import { computed, toRef } from 'vue'
+import { computed, toRef, watch } from 'vue'
 import { configs } from '../env'
 import { sharedState } from '../state/shared'
 
 export function useTimer() {
   const mode = computed(() => configs.timer || 'stopwatch')
   const duration = computed(() => parseTimeString(configs.duration).seconds)
-  const interval = useInterval(100, { controls: true })
+  const interval = useInterval(100, { controls: true, immediate: false })
 
   const state = toRef(sharedState, 'timer')
   const status = computed(() => state.value?.status)
+  // Also follows a timer started from another window, such as the presenter
+  watch(status, s => s === 'running'
+    ? interval.resume()
+    : interval.pause(), { immediate: true })
   const passedMs = computed(() => {
     // eslint-disable-next-line ts/no-unused-expressions
     interval.counter.value
@@ -51,7 +55,6 @@ export function useTimer() {
   })
 
   function reset() {
-    interval.pause()
     state.value = {
       status: 'stopped',
       slides: {},
@@ -71,13 +74,11 @@ export function useTimer() {
       state.value.status = 'running'
       state.value.startedAt = Date.now() - (state.value.pausedAt - state.value.startedAt)
     }
-    interval.resume()
   }
 
   function pause() {
     state.value.status = 'paused'
     state.value.pausedAt = Date.now()
-    interval.pause()
   }
 
   function toggle() {

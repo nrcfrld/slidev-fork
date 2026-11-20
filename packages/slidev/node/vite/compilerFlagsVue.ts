@@ -3,6 +3,7 @@ import type { Plugin } from 'vite'
 import { objectEntries } from '@antfu/utils'
 
 const RE_VUE_FILE = /\.vue(?:$|\?)/
+const RE_VUE_SUB_REQUEST = /\?vue&/
 
 /**
  * Replace compiler flags like `__DEV__` in Vue SFC
@@ -15,9 +16,13 @@ export function createVueCompilerFlagsPlugin(
     name: 'slidev:flags',
     enforce: 'pre',
     transform: {
-      // TODO: static filter
+      filter: {
+        id: {
+          include: [RE_VUE_FILE, RE_VUE_SUB_REQUEST],
+        },
+      },
       handler(code, id) {
-        if (!RE_VUE_FILE.test(id) && !id.includes('?vue&'))
+        if (!RE_VUE_FILE.test(id) && !RE_VUE_SUB_REQUEST.test(id))
           return
         const original = code
         define.forEach(([from, to]) => {
