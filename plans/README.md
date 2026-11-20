@@ -38,7 +38,7 @@ high-confidence security + correctness, then larger refactors. You may cherry-pi
 | 016 | Confine export output path from deck `exportFilename` | P2 | S | LOW | — | TODO |
 | 017 | Validate WebSocket Origin on privileged ws handlers | P2 | M | MED | — | TODO |
 | 018 | Enforce `--remote` auth server-side (not just client) | P3 | M-L | MED | — | TODO |
-| 019 | Key `getRoots()` cache by entry (multi-entry build/export) | P2 | M | MED | — | TODO |
+| 019 | Key `getRoots()` cache by entry (multi-entry build/export) | P2 | M | MED | — | DONE |
 | 020 | O(1) slide lookup Map (fix O(n²) TOC) | P2 | S | LOW | — | TODO |
 | 021 | Consolidate divergent `addToTree` TOC builders | P2 | M | MED | — | TODO |
 | 022 | Test the export pipeline (characterization tests) | P1 | M | LOW | — | TODO |

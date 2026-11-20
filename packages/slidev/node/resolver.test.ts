@@ -367,3 +367,16 @@ describe('computeInvocationSearchPaths', () => {
     expect(result.filter(p => p === resolve('/pnpm-home/v11/abc/node_modules'))).toHaveLength(1)
   })
 })
+
+describe('getRoots', () => {
+  it('resolves roots per entry', async () => {
+    const a = await getRoots('/user/a/slides.md')
+    const b = await getRoots('/user/b/slides.md')
+
+    expect(a.userRoot).toBe('/user/a')
+    expect(b.userRoot).toBe('/user/b')
+    expect(await getRoots()).toBe(b)
+    expect(await getRoots('/user/a/slides.md')).toBe(a)
+    expect(await getRoots()).toBe(a)
+  })
+})

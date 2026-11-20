@@ -439,13 +439,23 @@ async function searchForWorkspaceRoot(
   return searchForWorkspaceRoot(dir, root)
 }
 
-let rootsInfo: RootsInfo | null = null
+// Keyed by entry, so decks processed one after another in the same process
+// (multi-entry build/export, workspaces) each get their own roots
+const rootsCache = new Map<string, RootsInfo>()
+// Entry-less callers read the roots of the deck being processed
+let lastRoots: RootsInfo | null = null
 
 export async function getRoots(entry?: string): Promise<RootsInfo> {
-  if (rootsInfo)
-    return rootsInfo
-  if (!entry)
+  if (!entry) {
+    if (lastRoots)
+      return lastRoots
     throw new Error('[slidev] Cannot find roots without entry')
+  }
+  const cached = rootsCache.get(entry)
+  if (cached) {
+    lastRoots = cached
+    return cached
+  }
   const userRoot = dirname(entry)
   isInstalledGlobally.value
     = slash(relative(userRoot, process.argv[1])).includes('/.pnpm/')
@@ -461,14 +471,16 @@ export async function getRoots(entry?: string): Promise<RootsInfo> {
   const closestPkgRoot = dirname(await findClosestPkgJsonPath(userRoot) || userRoot)
   const userPkgJson = await getUserPkgJson(closestPkgRoot)
   const userWorkspaceRoot = await searchForWorkspaceRoot(closestPkgRoot)
-  rootsInfo = {
+  const info: RootsInfo = {
     cliRoot,
     clientRoot,
     userRoot,
     userPkgJson,
     userWorkspaceRoot,
   }
-  return rootsInfo
+  rootsCache.set(entry, info)
+  lastRoots = info
+  return info
 }
 
 export function resolveSourceFiles(
