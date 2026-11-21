@@ -158,3 +158,11 @@
 .wipe-down-enter-to {
   clip-path: inset(0);
 }
+
+/* View transitions (`view-transition` and `morph`): timing set per transition, browser defaults otherwise */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: var(--slidev-view-transition-duration, 0.25s);
+  animation-timing-function: var(--slidev-view-transition-easing, ease);
+}

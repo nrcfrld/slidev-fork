@@ -511,6 +511,38 @@ comark: true
 # View Transition {.inline-block.view-transition-title}
 ```
 
+### Morph {#morph}
+
+`morph` moves elements that two slides share into their new place and size, while the rest of the slide crossfades. It uses the [View Transitions API](#view-transitions), and pairs elements automatically:
+
+- headings with the same level and text
+- images with the same source
+
+```md
+---
+transition: morph
+---
+
+# Our Roadmap
+
+---
+
+<!-- The heading glides from the center to the top left -->
+<h1 class="absolute top-8 left-8 text-2xl">Our Roadmap</h1>
+```
+
+To pair any other elements, give them the same key with `v-morph`. This also works with `view-transition`:
+
+```md
+<div v-morph="'logo'" class="w-40">...</div>
+
+---
+
+<div v-morph="'logo'" class="absolute bottom-4 right-4 w-12">...</div>
+```
+
+`morph` takes 600ms with the `smooth` easing by default. Set your own like any transition, for example `transition: morph 900ms expo`. An element is only paired when its key appears once on each slide. In browsers without the View Transitions API, slides switch without animation.
+
 ### Custom Transitions {#custom-transitions}
 
 Slidev's slide transitions are powered by [Vue Transition](https://vuejs.org/guide/built-ins/transition.html). You can provide your custom transitions by:

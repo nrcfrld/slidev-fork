@@ -161,6 +161,7 @@ Per element: `<div v-click.scale.400ms.smooth>`. Missing parts fall back to the 
 - `iris` (circle reveal)
 - `wipe-left` / `wipe-right` / `wipe-up` / `wipe-down` (edge reveal)
 - `view-transition` (View Transitions API)
+- `morph` (View Transitions; pairs same headings/images automatically, `v-morph="'key'"` for others; default 600ms smooth)
 
 ### Duration and Easing
 

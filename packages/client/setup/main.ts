@@ -7,6 +7,7 @@ import setups from '#slidev/setups/main'
 import { createVClickDirectives } from '../modules/v-click'
 import { createVDragDirective } from '../modules/v-drag'
 import { createVMarkDirective } from '../modules/v-mark'
+import { createVMorphDirective } from '../modules/v-morph'
 import { createVMotionDirectives } from '../modules/v-motion'
 import { setupPWA } from '../setup/pwa'
 import setupRoutes from '../setup/routes'
@@ -36,6 +37,7 @@ export default async function setupMain(app: App) {
   app.use(createVMarkDirective())
   app.use(createVDragDirective())
   app.use(createVMotionDirectives())
+  app.use(createVMorphDirective())
   app.use(TwoSlashFloatingVue as any, { container: '#twoslash-container' })
 
   const context: AppContext = {

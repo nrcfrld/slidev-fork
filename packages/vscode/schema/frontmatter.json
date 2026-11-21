@@ -20,8 +20,8 @@
               "type": "null"
             }
           ],
-          "description": "Page transition, powered by Vue's `<TransitionGroup/>`\n\nBuilt-in transitions:\n- fade\n- fade-out\n- slide-left\n- slide-right\n- slide-up\n- slide-down\n- zoom-in\n- zoom-out\n- blur\n- rise\n- iris\n- wipe-left\n- wipe-right\n- wipe-up\n- wipe-down\n- view-transition\n\nA duration and an easing can follow the name, for example `zoom-in 800ms expo`.\n\nSee https://sli.dev/guide/animations.html#pages-transitions\n\nSee https://vuejs.org/guide/built-ins/transition.html",
-          "markdownDescription": "Page transition, powered by Vue's `<TransitionGroup/>`\n\nBuilt-in transitions:\n- fade\n- fade-out\n- slide-left\n- slide-right\n- slide-up\n- slide-down\n- zoom-in\n- zoom-out\n- blur\n- rise\n- iris\n- wipe-left\n- wipe-right\n- wipe-up\n- wipe-down\n- view-transition\n\nA duration and an easing can follow the name, for example `zoom-in 800ms expo`.\n\nSee https://sli.dev/guide/animations.html#pages-transitions\n\nSee https://vuejs.org/guide/built-ins/transition.html"
+          "description": "Page transition, powered by Vue's `<TransitionGroup/>`\n\nBuilt-in transitions:\n- fade\n- fade-out\n- slide-left\n- slide-right\n- slide-up\n- slide-down\n- zoom-in\n- zoom-out\n- blur\n- rise\n- iris\n- wipe-left\n- wipe-right\n- wipe-up\n- wipe-down\n- view-transition\n- morph\n\nA duration and an easing can follow the name, for example `zoom-in 800ms expo`.\n\nSee https://sli.dev/guide/animations.html#pages-transitions\n\nSee https://vuejs.org/guide/built-ins/transition.html",
+          "markdownDescription": "Page transition, powered by Vue's `<TransitionGroup/>`\n\nBuilt-in transitions:\n- fade\n- fade-out\n- slide-left\n- slide-right\n- slide-up\n- slide-down\n- zoom-in\n- zoom-out\n- blur\n- rise\n- iris\n- wipe-left\n- wipe-right\n- wipe-up\n- wipe-down\n- view-transition\n- morph\n\nA duration and an easing can follow the name, for example `zoom-in 800ms expo`.\n\nSee https://sli.dev/guide/animations.html#pages-transitions\n\nSee https://vuejs.org/guide/built-ins/transition.html"
         },
         "layout": {
           "anyOf": [
@@ -152,7 +152,8 @@
         "wipe-right",
         "wipe-up",
         "wipe-down",
-        "view-transition"
+        "view-transition",
+        "morph"
       ]
     },
     "TransitionGroupProps": {

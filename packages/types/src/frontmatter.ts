@@ -614,7 +614,7 @@ export interface ShikiMagicMoveOptions {
   enhanceMatching?: boolean
 }
 
-export type BuiltinSlideTransition = 'fade' | 'fade-out' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'zoom-in' | 'zoom-out' | 'blur' | 'rise' | 'iris' | 'wipe-left' | 'wipe-right' | 'wipe-up' | 'wipe-down' | 'view-transition'
+export type BuiltinSlideTransition = 'fade' | 'fade-out' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'zoom-in' | 'zoom-out' | 'blur' | 'rise' | 'iris' | 'wipe-left' | 'wipe-right' | 'wipe-up' | 'wipe-down' | 'view-transition' | 'morph'
 
 export interface TransitionOptions {
   /**
@@ -637,6 +637,7 @@ export interface TransitionOptions {
    * - wipe-up
    * - wipe-down
    * - view-transition
+   * - morph
    *
    * A duration and an easing can follow the name, for example `zoom-in 800ms expo`.
    *
