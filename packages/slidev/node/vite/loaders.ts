@@ -206,6 +206,8 @@ export function createSlidesLoader(
         const newIds = newSourceIds[type]
         for (let i = 0; i < newIds.length; i++) {
           if (old[i] !== newIds[i]) {
+            // `/@slidev/slides` imports the source modules directly
+            moduleIds.add(templateSlides.id)
             moduleIds.add(`${VIRTUAL_SLIDE_PREFIX}${i + 1}/${type}`)
           }
         }
@@ -333,6 +335,7 @@ export function createSlidesLoader(
         const templateContext: VirtualModuleContext = {
           resolve: this.resolve.bind(this),
           makeAbsoluteImportGlob,
+          slideSourceIds: sourceIds,
         }
         return {
           code: await template.getContent.call(templateContext, options),

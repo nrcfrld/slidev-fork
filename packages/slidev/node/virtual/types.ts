@@ -5,6 +5,13 @@ import type { MakeAbsoluteImportGlob } from '../utils'
 
 export interface VirtualModuleContext extends Pick<Rolldown.PluginContext, 'resolve'> {
   makeAbsoluteImportGlob: MakeAbsoluteImportGlob
+  /**
+   * Module ids of each slide's markdown and frontmatter, by slide index
+   */
+  slideSourceIds: {
+    md: string[]
+    frontmatter: string[]
+  }
 }
 
 export interface VirtualModuleTemplate {
