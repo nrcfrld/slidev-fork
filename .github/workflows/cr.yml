@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   cr:
+    # Publishing needs the pkg.pr.new GitHub App, which forks don't have installed
+    if: github.repository == 'slidevjs/slidev'
     runs-on: ubuntu-latest
 
     steps:
