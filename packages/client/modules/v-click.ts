@@ -194,6 +194,7 @@ export function resolveClick(el: Element | string, dir: DirectiveBinding<any>, v
 
 function unmounted(el: HTMLElement, dir: DirectiveBinding<any>) {
   el.classList.toggle(CLASS_VCLICK_TARGET, false)
+  resolvedClickMap.delete(el)
   const ctx = directiveInject(dir, injectionClicksContext)?.value
   ctx?.unregister(el)
   // @ts-expect-error extra prop
