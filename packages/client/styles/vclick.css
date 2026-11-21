@@ -1,12 +1,17 @@
 .slidev-vclick-target {
-  transition: all 0.1s ease;
+  transition: all var(--slidev-vclick-duration, 0.1s) var(--slidev-vclick-easing, ease);
 
   &.slidev-vclick-anim-none {
     transition: none;
   }
 
   &.slidev-vclick-anim-fade-in {
-    transition: all 0.3s ease;
+    transition: all var(--slidev-vclick-duration, 0.3s) var(--slidev-vclick-easing, ease);
+  }
+
+  /* Stagger only when showing, so hiding stays immediate */
+  &:not(.slidev-vclick-hidden) {
+    transition-delay: var(--slidev-vclick-delay, 0s);
   }
 }
 

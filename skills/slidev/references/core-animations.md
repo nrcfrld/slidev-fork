@@ -140,6 +140,17 @@ transition: fade
 ---
 ```
 
+### Click Animation Timing
+
+```yaml
+---
+clickAnimation: up 600ms expo   # presets, then optional duration and easing
+clickStagger: 80ms              # delay between elements shown on the same click
+---
+```
+
+Per element: `<div v-click.scale.400ms.smooth>`. Missing parts fall back to the slide's `clickAnimation`.
+
 ### Built-in Transitions
 
 - `fade` / `fade-out`

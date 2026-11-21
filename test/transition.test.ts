@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { mergeClickAnimation, parseClickAnimation } from '../packages/client/logic/clickAnimation'
 import { getTransitionStyle, parseTransitionString, toMilliseconds } from '../packages/client/logic/transitionOptions'
 
 describe('parseTransitionString', () => {
@@ -46,4 +47,32 @@ it('toMilliseconds', () => {
   expect(toMilliseconds('250ms')).toBe(250)
   expect(toMilliseconds(100)).toBe(100)
   expect(toMilliseconds('fast')).toBeUndefined()
+})
+
+describe('parseClickAnimation', () => {
+  it('reads presets, duration and easing', () => {
+    expect(parseClickAnimation('up scale 600ms expo')).toEqual({
+      names: ['up', 'scale'],
+      duration: '600ms',
+      easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+    })
+    expect(parseClickAnimation('fade, right')).toEqual({
+      names: ['fade', 'right'],
+    })
+    expect(parseClickAnimation(['scale', '1.2s'])).toEqual({
+      names: ['scale'],
+      duration: '1200ms',
+    })
+    expect(parseClickAnimation(undefined)).toEqual({ names: [] })
+  })
+
+  it('fills what an element leaves out from the slide', () => {
+    const slide = parseClickAnimation('up 600ms expo')
+    expect(mergeClickAnimation(parseClickAnimation(['800ms']), slide)).toEqual({
+      names: ['up'],
+      duration: '800ms',
+      easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+    })
+    expect(mergeClickAnimation(parseClickAnimation(['scale']), slide).names).toEqual(['scale'])
+  })
 })

@@ -108,8 +108,16 @@
         },
         "clickAnimation": {
           "type": "string",
-          "description": "Default click animation for the slide",
-          "markdownDescription": "Default click animation for the slide"
+          "description": "Default click animation for the slide: preset names, then an optional duration and easing, for example `up 600ms expo`",
+          "markdownDescription": "Default click animation for the slide: preset names, then an optional\nduration and easing, for example `up 600ms expo`"
+        },
+        "clickStagger": {
+          "type": [
+            "string",
+            "number"
+          ],
+          "description": "Delay between elements that appear on the same click, for example `80ms`",
+          "markdownDescription": "Delay between elements that appear on the same click, for example `80ms`"
         },
         "dragPos": {
           "type": "object",

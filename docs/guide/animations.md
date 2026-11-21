@@ -258,6 +258,40 @@ There are some built-in presets available for you to use:
 - `scale`: Scale to 0.9
 - `none`: Disables animation for this element
 
+#### Duration and Easing {#click-animation-timing}
+
+Add a duration and an easing after the preset names. Easing can be any CSS easing, or `smooth`, `expo` or `snappy` like [slide transitions](#transition-timing):
+
+```yaml
+---
+clickAnimation: up 600ms expo
+---
+```
+
+Per element, use modifiers. An element's own parts replace the slide's, and the parts it leaves out come from the slide:
+
+```md
+<div v-click.scale.400ms>Scales in, with the slide's easing</div>
+<div v-click.800ms.smooth>Uses the slide's presets, slower and smoother</div>
+```
+
+#### Stagger {#click-stagger}
+
+When several elements appear on the same click, `clickStagger` shows them one after another, in the order they appear on the slide:
+
+```md
+---
+clickAnimation: up 500ms expo
+clickStagger: 80ms
+---
+
+<div v-click="1">First</div>
+<div v-click="1">Second, 80ms later</div>
+<div v-click="1">Third, 160ms later</div>
+```
+
+Hiding is not staggered, so going back stays immediate.
+
 And you can also define your own presets with custom CSS rules for `.slidev-vclick-anim-{presetName}`:
 
 ```css

@@ -12,17 +12,51 @@ import {
   injectionFrontmatter,
 } from '../constants'
 import { configs } from '../env'
+import { mergeClickAnimation, parseClickAnimation } from '../logic/clickAnimation'
+import { toMilliseconds } from '../logic/transitionOptions'
 import { directiveInject } from '../utils'
 
-const RE_WHITESPACE_OR_COMMA = /[\s,]+/
+export const resolvedClickMap = new Map<ClicksElement, ReturnType<typeof resolveClick>>()
 
-function syncAnimationClasses(el: HTMLElement, animations: string[]) {
-  const targetClasses = animations.map(a => `${CLASS_VCLICK_ANIMATION_PREFIX}${a}`)
+type ResolvedClick = NonNullable<ReturnType<typeof resolveClick>>
+
+function setStyleVar(el: HTMLElement, name: string, value: string | undefined) {
+  if (value)
+    el.style.setProperty(name, value)
+  else
+    el.style.removeProperty(name)
+}
+
+/**
+ * Position of an element among the elements of the same slide that appear on the same click
+ */
+function getStaggerIndex(el: HTMLElement, resolved: ResolvedClick) {
+  const peers: Element[] = []
+  for (const [other, info] of resolvedClickMap) {
+    if (info?.clicksContext === resolved.clicksContext && info.start === resolved.start && other instanceof Element && other.isConnected)
+      peers.push(other)
+  }
+  peers.sort((a, b) => a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING
+    ? -1
+    : 1)
+  return Math.max(0, peers.indexOf(el))
+}
+
+function syncAnimation(el: HTMLElement, resolved: ResolvedClick) {
+  const { names, duration, easing } = resolved.animation.value
+  const targetClasses = names.map(a => `${CLASS_VCLICK_ANIMATION_PREFIX}${a}`)
   el.classList.forEach((c) => {
     if (c.startsWith(CLASS_VCLICK_ANIMATION_PREFIX) && !targetClasses.includes(c))
       el.classList.remove(c)
   })
   targetClasses.forEach(c => el.classList.add(c))
+
+  setStyleVar(el, '--slidev-vclick-duration', duration)
+  setStyleVar(el, '--slidev-vclick-easing', easing)
+  const stagger = resolved.stagger.value
+  setStyleVar(el, '--slidev-vclick-delay', stagger && resolved.isShown.value
+    ? `${getStaggerIndex(el, resolved) * stagger}ms`
+    : undefined)
 }
 
 export function createVClickDirectives() {
@@ -58,7 +92,7 @@ export function createVClickDirectives() {
               el.classList.toggle(CLASS_VCLICK_HIDDEN, !active)
             }
 
-            syncAnimationClasses(el, resolved.flagAnimations.value)
+            syncAnimation(el, resolved)
 
             el.classList.toggle(CLASS_VCLICK_CURRENT, current)
             el.classList.toggle(CLASS_VCLICK_PRIOR, prior)
@@ -92,7 +126,7 @@ export function createVClickDirectives() {
               el.classList.toggle(CLASS_VCLICK_HIDDEN, !active)
             }
 
-            syncAnimationClasses(el, resolved.flagAnimations.value)
+            syncAnimation(el, resolved)
 
             el.classList.toggle(CLASS_VCLICK_CURRENT, current)
             el.classList.toggle(CLASS_VCLICK_PRIOR, prior)
@@ -121,7 +155,7 @@ export function createVClickDirectives() {
             el.classList.toggle(CLASS_VCLICK_HIDDEN, active)
             el.classList.toggle(CLASS_VCLICK_HIDDEN_EXP, active)
 
-            syncAnimationClasses(el, resolved.flagAnimations.value)
+            syncAnimation(el, resolved)
 
             el.classList.toggle(CLASS_VCLICK_CURRENT, current)
             el.classList.toggle(CLASS_VCLICK_PRIOR, prior)
@@ -132,8 +166,6 @@ export function createVClickDirectives() {
     },
   }
 }
-
-export const resolvedClickMap = new Map<ClicksElement, ReturnType<typeof resolveClick>>()
 
 export function resolveClick(el: Element | string, dir: DirectiveBinding<any>, value: RawAtValue, explicitHide = false) {
   const ctx = directiveInject(dir, injectionClicksContext)?.value
@@ -149,14 +181,18 @@ export function resolveClick(el: Element | string, dir: DirectiveBinding<any>, v
    * Priority: directive modifiers (stacked) > slide frontmatter > global config.
    * Modifiers allow composition, e.g., v-click.fade.up.scale.
    */
-  const elModifiers = Object.keys({ ...dir.modifiers }).filter(m => m !== 'hide')
-  const flagAnimations = computed(() => {
-    if (elModifiers.length > 0)
-      return elModifiers
-    const preset = frontmatter?.clickAnimation || configs.clickAnimation
-    if (preset)
-      return preset.split(RE_WHITESPACE_OR_COMMA).filter(Boolean)
-    return []
+  const elAnimation = parseClickAnimation(Object.keys({ ...dir.modifiers }).filter(m => m !== 'hide'))
+  const animation = computed(() => mergeClickAnimation(
+    elAnimation,
+    parseClickAnimation(frontmatter?.clickAnimation || configs.clickAnimation),
+  ))
+  const flagAnimations = computed(() => animation.value.names)
+  // Delay between elements that appear on the same click
+  const stagger = computed(() => {
+    const value = frontmatter?.clickStagger ?? configs.clickStagger
+    return value == null || value === ''
+      ? 0
+      : toMilliseconds(value) ?? 0
   })
 
   const info = ctx.calculate(value)
@@ -187,6 +223,9 @@ export function resolveClick(el: Element | string, dir: DirectiveBinding<any>, v
     visibilityState,
     flagHide,
     flagAnimations,
+    animation,
+    stagger,
+    clicksContext: ctx,
   }
   resolvedClickMap.set(el, resolved)
   return resolved

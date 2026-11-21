@@ -338,9 +338,14 @@ export interface HeadmatterConfig extends TransitionOptions {
    */
   shiki?: ShikiOptions
   /**
-   * Default click animation for the slides
+   * Default click animation for the slides: preset names, then an optional
+   * duration and easing, for example `up 600ms expo`
    */
   clickAnimation?: string
+  /**
+   * Delay between elements that appear on the same click, for example `80ms`
+   */
+  clickStagger?: string | number
   /**
    * Preload images extracted from slides for faster navigation.
    *
@@ -421,9 +426,14 @@ export interface Frontmatter extends TransitionOptions {
    */
   zoom?: number
   /**
-   * Default click animation for the slide
+   * Default click animation for the slide: preset names, then an optional
+   * duration and easing, for example `up 600ms expo`
    */
   clickAnimation?: string
+  /**
+   * Delay between elements that appear on the same click, for example `80ms`
+   */
+  clickStagger?: string | number
   /**
    * Store the positions of draggable elements
    * Normally you don't need to set this manually
