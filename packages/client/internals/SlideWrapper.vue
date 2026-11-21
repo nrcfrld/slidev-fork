@@ -7,6 +7,7 @@ import { SlideBottom, SlideTop } from '#slidev/global-layers'
 import { injectionClicksContext, injectionCurrentPage, injectionFrontmatter, injectionRenderContext, injectionRoute, injectionSlideZoom } from '../constants'
 import { configs } from '../env'
 import { getSlideClass } from '../utils'
+import SlideCamera from './SlideCamera.vue'
 
 const props = defineProps({
   clicksContext: {
@@ -32,6 +33,7 @@ const props = defineProps({
 })
 
 const zoom = computed(() => props.route.meta?.slide?.frontmatter.zoom ?? 1)
+const camera = computed(() => props.route.meta?.slide?.frontmatter.camera)
 
 provideLocal(injectionRoute, props.route)
 provideLocal(injectionFrontmatter, props.route.meta.slide.frontmatter)
@@ -57,7 +59,10 @@ const style = computed<CSSProperties>(() => ({
   >
     <template v-if="props.mounted">
       <SlideBottom />
-      <component :is="props.route.component" />
+      <SlideCamera v-if="camera?.length" :keyframes="camera" :clicks-context="props.clicksContext">
+        <component :is="props.route.component" />
+      </SlideCamera>
+      <component :is="props.route.component" v-else />
       <SlideTop />
     </template>
   </div>

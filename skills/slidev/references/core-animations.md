@@ -151,6 +151,24 @@ clickStagger: 80ms              # delay between elements shown on the same click
 
 Per element: `<div v-click.scale.400ms.smooth>`. Missing parts fall back to the slide's `clickAnimation`.
 
+### Camera (zoom and pan on clicks)
+
+```yaml
+---
+camera:
+  - at: 1
+    target: '.chart'          # frame an element
+  - zoom: 2.5                 # at: 2 (follows the previous keyframe)
+    x: 75%
+    y: 30%
+    duration: 1.2s
+    easing: expo
+  - at: 3                     # back to the whole slide
+---
+```
+
+Keyframes count as click steps. Defaults: 800ms, `smooth`. Never shows past the slide edges.
+
 ### Built-in Transitions
 
 - `fade` / `fade-out`

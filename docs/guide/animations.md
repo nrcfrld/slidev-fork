@@ -427,6 +427,37 @@ Due to a Vue internal [bug](https://github.com/vuejs/core/issues/10295), current
 
 Learn more: [Demo](https://sli.dev/demo/starter/10) | [@vueuse/motion](https://motion.vueuse.org/) | [v-motion](https://motion.vueuse.org/features/directive-usage) | [Presets](https://motion.vueuse.org/features/presets)
 
+## Camera {#camera}
+
+The `camera` frontmatter zooms and pans within a slide on clicks, to walk your audience through a diagram, a screenshot or a dense chart. Each keyframe applies from its click on:
+
+```md
+---
+camera:
+  - at: 1
+    target: '.revenue-chart'
+  - at: 2
+    zoom: 2.5
+    x: 75%
+    y: 30%
+    duration: 1.2s
+    easing: expo
+  - at: 3
+---
+```
+
+Each keyframe can set:
+
+- `target`: a CSS selector of an element in the slide to frame. The zoom fits the element with a margin, unless you set `zoom`.
+- `zoom`: the scale of the view, where `1` shows the whole slide.
+- `x` and `y`: the center of the view, in pixels or as a percentage of the slide. Defaults to the center.
+- `duration` and `easing`: how the camera moves to this keyframe. Defaults to `800ms` and `smooth`.
+- `at`: the click that applies the keyframe. Defaults to the click after the previous keyframe.
+
+A keyframe with only `at` returns to the whole slide, and so does going back before the first keyframe. The camera never shows past the edges of the slide. Keyframes count as clicks, so the camera works on slides without other click animations too, and you can combine it with `v-click`.
+
+Only the slide content moves: [global layers](/features/global-layers) such as page numbers stay in place. Exports show each keyframe without the move.
+
 ## Slide Transitions {#slide-transitions}
 
 <div id="pages-transitions" />

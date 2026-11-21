@@ -435,6 +435,12 @@ export interface Frontmatter extends TransitionOptions {
    */
   clickStagger?: string | number
   /**
+   * Zoom and pan within the slide on clicks. Each keyframe applies from its click on.
+   *
+   * See https://sli.dev/guide/animations#camera
+   */
+  camera?: CameraKeyframe[]
+  /**
    * Store the positions of draggable elements
    * Normally you don't need to set this manually
    *
@@ -612,6 +618,43 @@ export interface ShikiMagicMoveOptions {
    * Enhance the matching algorithm to match tokens that has same content
    */
   enhanceMatching?: boolean
+}
+
+export interface CameraKeyframe {
+  /**
+   * Click that applies this keyframe. Defaults to the click after the previous keyframe.
+   */
+  at?: number
+  /**
+   * CSS selector of an element in the slide to frame. Sets the zoom to fit it unless `zoom` is given.
+   */
+  target?: string
+  /**
+   * Scale of the view, where `1` shows the whole slide
+   *
+   * @default 1
+   */
+  zoom?: number
+  /**
+   * Horizontal center of the view, in pixels or as a percentage of the slide such as `'25%'`
+   */
+  x?: number | string
+  /**
+   * Vertical center of the view, in pixels or as a percentage of the slide
+   */
+  y?: number | string
+  /**
+   * Duration of the move to this keyframe, in milliseconds or as a CSS time
+   *
+   * @default '800ms'
+   */
+  duration?: number | string
+  /**
+   * CSS easing of the move, or one of `smooth`, `expo` and `snappy`
+   *
+   * @default 'smooth'
+   */
+  easing?: string
 }
 
 export type BuiltinSlideTransition = 'fade' | 'fade-out' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'zoom-in' | 'zoom-out' | 'blur' | 'rise' | 'iris' | 'wipe-left' | 'wipe-right' | 'wipe-up' | 'wipe-down' | 'view-transition' | 'morph'

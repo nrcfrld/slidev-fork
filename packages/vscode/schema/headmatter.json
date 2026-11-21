@@ -96,6 +96,14 @@
           "description": "Delay between elements that appear on the same click, for example `80ms`",
           "markdownDescription": "Delay between elements that appear on the same click, for example `80ms`"
         },
+        "camera": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CameraKeyframe"
+          },
+          "description": "Zoom and pan within the slide on clicks. Each keyframe applies from its click on.\n\nSee https://sli.dev/guide/animations#camera",
+          "markdownDescription": "Zoom and pan within the slide on clicks. Each keyframe applies from its click on.\n\nSee https://sli.dev/guide/animations#camera"
+        },
         "dragPos": {
           "type": "object",
           "additionalProperties": {
@@ -650,6 +658,58 @@
         "two-cols"
       ]
     },
+    "CameraKeyframe": {
+      "type": "object",
+      "properties": {
+        "at": {
+          "type": "number",
+          "description": "Click that applies this keyframe. Defaults to the click after the previous keyframe.",
+          "markdownDescription": "Click that applies this keyframe. Defaults to the click after the previous keyframe."
+        },
+        "target": {
+          "type": "string",
+          "description": "CSS selector of an element in the slide to frame. Sets the zoom to fit it unless `zoom` is given.",
+          "markdownDescription": "CSS selector of an element in the slide to frame. Sets the zoom to fit it unless `zoom` is given."
+        },
+        "zoom": {
+          "type": "number",
+          "description": "Scale of the view, where `1` shows the whole slide",
+          "markdownDescription": "Scale of the view, where `1` shows the whole slide",
+          "default": 1
+        },
+        "x": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "Horizontal center of the view, in pixels or as a percentage of the slide such as `'25%'`",
+          "markdownDescription": "Horizontal center of the view, in pixels or as a percentage of the slide such as `'25%'`"
+        },
+        "y": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "Vertical center of the view, in pixels or as a percentage of the slide",
+          "markdownDescription": "Vertical center of the view, in pixels or as a percentage of the slide"
+        },
+        "duration": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "Duration of the move to this keyframe, in milliseconds or as a CSS time",
+          "markdownDescription": "Duration of the move to this keyframe, in milliseconds or as a CSS time",
+          "default": "800ms"
+        },
+        "easing": {
+          "type": "string",
+          "description": "CSS easing of the move, or one of `smooth`, `expo` and `snappy`",
+          "markdownDescription": "CSS easing of the move, or one of `smooth`, `expo` and `snappy`",
+          "default": "smooth"
+        }
+      }
+    },
     "BuiltinSlideTransition": {
       "type": "string",
       "enum": [
@@ -1164,6 +1224,14 @@
           ],
           "description": "Delay between elements that appear on the same click, for example `80ms`",
           "markdownDescription": "Delay between elements that appear on the same click, for example `80ms`"
+        },
+        "camera": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CameraKeyframe"
+          },
+          "description": "Zoom and pan within the slide on clicks. Each keyframe applies from its click on.\n\nSee https://sli.dev/guide/animations#camera",
+          "markdownDescription": "Zoom and pan within the slide on clicks. Each keyframe applies from its click on.\n\nSee https://sli.dev/guide/animations#camera"
         },
         "dragPos": {
           "type": "object",
