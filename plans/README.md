@@ -43,7 +43,7 @@ high-confidence security + correctness, then larger refactors. You may cherry-pi
 | 021 | Consolidate divergent `addToTree` TOC builders | P2 | M | MED | — | TODO |
 | 022 | Test the export pipeline (characterization tests) | P1 | M | LOW | — | TODO |
 | 023 | Decompose god functions in `export.ts`/`cli.ts` | P3 | L | MED | 022 | TODO |
-| 024 | Incremental HMR parse cache | P3 | L | MED | — | TODO |
+| 024 | Incremental HMR parse cache | P3 | L | MED | — | REJECTED (full reparse measured at 2.5–4.5 ms for 200–1,000 slides; not worth the cache risk) |
 | 025 | Guard `skills/`-vs-`docs/` drift in CI | P3 | S-M | LOW | — | TODO |
 
 Status values: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` (one-line reason) |
