@@ -272,7 +272,7 @@ export function createSlidesLoader(
       }
 
       Object.assign(data, newData)
-      Object.assign(utils, createDataUtils(options))
+      Object.assign(utils, await createDataUtils(options))
       mdKeys = newMdKeys
       setSlideMdKeys(data, mdKeys)
 
