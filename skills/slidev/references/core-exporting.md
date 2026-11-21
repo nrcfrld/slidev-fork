@@ -50,6 +50,16 @@ slidev export --format png --range 1-5
 slidev export --format md
 ```
 
+### Video Export (needs ffmpeg)
+
+```bash
+slidev export --format mp4                      # 1920x1080, 60fps, H.264
+slidev export --format webm --step-duration 5000  # VP9, 5s per click step
+slidev export --format mp4 --fps 30 --range 3-8
+```
+
+Renders frame by frame on a virtual clock: transitions, clicks, morph and camera play smoothly. `SLIDEV_FFMPEG` overrides the ffmpeg path.
+
 ## Export Options
 
 ### With Click Steps

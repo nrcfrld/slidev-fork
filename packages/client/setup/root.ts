@@ -27,12 +27,14 @@ export default function setupRoot() {
   app.provide(injectionCurrentPage, computed(() => context.nav.currentSlideNo))
   app.provide(injectionClicksContext, shallowRef(createFixedClicks()))
 
-  // allows controls from postMessages
-  if (__DEV__) {
+  // Exposed while served, so export tools (such as video export) can drive navigation
+  if (__DEV__ || __SLIDEV_HAS_SERVER__) {
     // @ts-expect-error expose global
     window.__slidev__ = context
-    useEmbeddedControl()
   }
+  // allows controls from postMessages
+  if (__DEV__)
+    useEmbeddedControl()
 
   // User Setups
   for (const setup of setups)

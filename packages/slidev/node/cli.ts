@@ -6,7 +6,7 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import process from 'node:process'
 import * as readline from 'node:readline'
-import { verifyConfig } from '@slidev/parser'
+import { parseRangeString, verifyConfig } from '@slidev/parser'
 import { blue, bold, cyan, cyanBright, dim, gray, green, underline, yellow } from 'ansis'
 import equal from 'fast-deep-equal'
 import { getPort } from 'get-port-please'
@@ -641,10 +641,28 @@ cli.command(
         await server.listen(candidatePort)
         const port = getViteServerPort(server)
         printInfo(options)
-        const result = await exportSlides({
-          port,
-          ...getExportOptions({ ...args, entry: entryFile }, options),
-        })
+        const exportOptions = getExportOptions({ ...args, entry: entryFile }, options)
+        const result = args.format === 'mp4' || args.format === 'webm'
+          ? await (await import('./commands/video')).exportVideo({
+              port,
+              output: exportOptions.output ?? 'slides',
+              format: args.format,
+              stepDuration: args['step-duration'] ?? 3000,
+              fps: args.fps ?? 60,
+              width: exportOptions.width ?? 1920,
+              height: exportOptions.height ?? 1080,
+              // 1920 pixels wide unless a scale is given
+              scale: args.scale ?? 1920 / (exportOptions.width ?? 1920),
+              dark: exportOptions.dark ?? false,
+              timeout: exportOptions.timeout ?? 30000,
+              routerMode: exportOptions.routerMode,
+              executablePath: exportOptions.executablePath,
+              range: getRangeBounds(exportOptions.range, exportOptions.total),
+            })
+          : await exportSlides({
+              port,
+              ...exportOptions,
+            })
         console.log(`${green('  ✓ ')}${dim('exported to ')}${result}\n`)
       }
       finally {
@@ -729,6 +747,18 @@ cli
   .help()
   .parse()
 
+function getRangeBounds(range: string | undefined, total: number): [number, number] | undefined {
+  if (!range)
+    return undefined
+  const pages = parseRangeString(total, range)
+  return pages.length
+    ? [
+        Math.min(...pages),
+        Math.max(...pages),
+      ]
+    : undefined
+}
+
 function getViteServerPort(server: ViteDevServer): number {
   const address = server.httpServer?.address()
   if (address && typeof address === 'object')
@@ -782,8 +812,18 @@ function exportOptions<T>(args: Argv<T>) {
         'pptx',
         'pptx-editable',
         'md',
+        'mp4',
+        'webm',
       ],
       describe: 'output format',
+    })
+    .option('step-duration', {
+      type: 'number',
+      describe: 'video only: time each click step is shown, in ms (default 3000)',
+    })
+    .option('fps', {
+      type: 'number',
+      describe: 'video only: frames per second (default 60)',
     })
     .option('timeout', {
       type: 'number',

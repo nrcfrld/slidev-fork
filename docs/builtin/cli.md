@@ -97,7 +97,9 @@ Export slides to PDF (or other format). See <LinkInline link="guide/exporting" /
 Options:
 
 - `--output` (`string`, default: use `exportFilename` (see https://sli.dev/custom/#headmatter) or use `[entry]-export`): path to the output.
-- `--format` (`'pdf', 'png', 'pptx', 'pptx-editable', 'md'`, default: `'pdf'`): output format. `pptx` exports each slide as an image; `pptx-editable` rebuilds them as native PowerPoint shapes with selectable text.
+- `--format` (`'pdf', 'png', 'pptx', 'pptx-editable', 'md', 'mp4', 'webm'`, default: `'pdf'`): output format. `pptx` exports each slide as an image; `pptx-editable` rebuilds them as native PowerPoint shapes with selectable text. `mp4` and `webm` export a video and need ffmpeg (see <LinkInline link="guide/exporting#video" />).
+- `--step-duration` (`number`, default: `3000`): video only, time each click step is shown, in milliseconds
+- `--fps` (`number`, default: `60`): video only, frames per second
 - `--timeout` (`number`, default: `30000`): timeout for rendering the print page (see https://playwright.dev/docs/api/class-page#page-goto).
 - `--range` (`string`): page ranges to export (example: `'1,4-5,6'`).
 - `--dark` (`boolean`, default: `false`): export as dark theme.

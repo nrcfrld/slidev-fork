@@ -108,6 +108,36 @@ You can also compile a markdown file composed of compiled png using `--format md
 $ slidev export --format md
 ```
 
+### Video {#video}
+
+Export the deck as a video, with every transition, click animation, morph and camera move played as in the presentation:
+
+```bash
+$ slidev export --format mp4
+$ slidev export --format webm
+```
+
+Slidev steps through every click of every slide and renders each frame on its own, so the video is smooth however long a frame takes to render. Each click step is shown for 3 seconds before the next one starts. Change it with `--step-duration`, in milliseconds:
+
+```bash
+$ slidev export --format mp4 --step-duration 5000
+```
+
+Other options:
+
+- `--fps`: frames per second, `60` by default.
+- `--scale`: size of the video relative to the slide canvas. By default the video is 1920 pixels wide, so 1920×1080 for 16:9 slides.
+- `--range`: export only part of the deck, for example `--range 3-8`.
+- `--dark`: use the dark theme.
+
+`mp4` uses H.264 and plays almost everywhere. `webm` uses VP9.
+
+::: warning
+Video export needs [ffmpeg](https://ffmpeg.org). Install it, for example with `brew install ffmpeg` or `apt install ffmpeg`, or set `SLIDEV_FFMPEG` to its path.
+:::
+
+Videos, audio and embeds in slides keep playing in real time, so they don't match the rest of the video.
+
 ## Presenter Notes {#presenter-notes}
 
 To print your presenter notes separately from the slides, use [`slidev export-notes`](../builtin/cli#export-notes). This requires the same [Playwright installation](#cli) as slide exports.
