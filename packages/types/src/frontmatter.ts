@@ -385,8 +385,6 @@ export interface Frontmatter extends TransitionOptions {
    * Set to `true` to keep this slide mounted once it has loaded, for example
    * to keep the state of an editor or a video when navigating away.
    * Set to `false` to only load it when it becomes the current slide.
-   *
-   * @default undefined
    */
   preload?: boolean
   /**

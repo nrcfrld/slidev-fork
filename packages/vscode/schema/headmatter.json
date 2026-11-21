@@ -49,9 +49,8 @@
         },
         "preload": {
           "type": "boolean",
-          "description": "Preload the slide when the previous slide is active",
-          "markdownDescription": "Preload the slide when the previous slide is active",
-          "default": true
+          "description": "Preload the slide when a nearby slide is active.\n\nSlides further than two slides from the current one are unmounted. Set to `true` to keep this slide mounted once it has loaded, for example to keep the state of an editor or a video when navigating away. Set to `false` to only load it when it becomes the current slide.",
+          "markdownDescription": "Preload the slide when a nearby slide is active.\n\nSlides further than two slides from the current one are unmounted.\nSet to `true` to keep this slide mounted once it has loaded, for example\nto keep the state of an editor or a video when navigating away.\nSet to `false` to only load it when it becomes the current slide."
         },
         "hide": {
           "type": "boolean",
@@ -1083,9 +1082,8 @@
         },
         "preload": {
           "type": "boolean",
-          "description": "Preload the slide when the previous slide is active",
-          "markdownDescription": "Preload the slide when the previous slide is active",
-          "default": true
+          "description": "Preload the slide when a nearby slide is active.\n\nSlides further than two slides from the current one are unmounted. Set to `true` to keep this slide mounted once it has loaded, for example to keep the state of an editor or a video when navigating away. Set to `false` to only load it when it becomes the current slide.",
+          "markdownDescription": "Preload the slide when a nearby slide is active.\n\nSlides further than two slides from the current one are unmounted.\nSet to `true` to keep this slide mounted once it has loaded, for example\nto keep the state of an editor or a video when navigating away.\nSet to `false` to only load it when it becomes the current slide."
         },
         "hide": {
           "type": "boolean",
