@@ -21,6 +21,14 @@ const props = defineProps({
     type: Object as PropType<SlideRoute>,
     required: true,
   },
+  /**
+   * Whether the slide's content is mounted. The wrapper element itself stays,
+   * so it is never removed from the slides' transition group.
+   */
+  mounted: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const zoom = computed(() => props.route.meta?.slide?.frontmatter.zoom ?? 1)
@@ -47,9 +55,11 @@ const style = computed<CSSProperties>(() => ({
     :style="style"
     :lang="props.route.meta.slide.frontmatter.lang"
   >
-    <SlideBottom />
-    <component :is="props.route.component" />
-    <SlideTop />
+    <template v-if="props.mounted">
+      <SlideBottom />
+      <component :is="props.route.component" />
+      <SlideTop />
+    </template>
   </div>
 </template>
 

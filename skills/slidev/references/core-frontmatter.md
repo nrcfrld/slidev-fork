@@ -109,6 +109,7 @@ routeAlias: intro           # URL: /intro instead of /1
 ```yaml
 ---
 preload: false              # Don't mount until entering
+preload: true               # Keep mounted once loaded (by default, only slides within 2 of the current one stay mounted)
 ---
 ```
 
