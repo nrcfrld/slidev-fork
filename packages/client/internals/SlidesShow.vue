@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SlideRoute } from '@slidev/types'
 import { recomputeAllPoppers } from 'floating-vue'
-import { computed, shallowRef, TransitionGroup, watchEffect } from 'vue'
+import { computed, shallowRef, TransitionGroup, watch, watchEffect } from 'vue'
 import { GlobalBottom, GlobalTop } from '#slidev/global-layers'
 import { createFixedClicks } from '../composables/useClicks'
 import { useNav } from '../composables/useNav'
@@ -29,23 +29,47 @@ const {
   printRange,
 } = useNav()
 
+// The content of slides further than this from the current one is unmounted
+// (their code stays loaded), so embeds, diagrams and editors on them don't keep
+// running hidden. `preload: true` in a slide's frontmatter keeps it mounted.
+const MOUNT_DISTANCE = 2
+
+function isNearby(route: SlideRoute) {
+  return Math.abs(route.no - currentSlideRoute.value.no) <= MOUNT_DISTANCE
+}
+
+// The slide being left keeps its content until its leave transition is done
+const leavingRoute = shallowRef<SlideRoute>()
+watch(currentSlideRoute, (_, from) => leavingRoute.value = from)
+
+function isMounted(route: SlideRoute) {
+  return isPrintMode.value
+    || route === currentSlideRoute.value
+    || route === leavingRoute.value
+    || route.meta.preload === true
+    || isNearby(route)
+}
+
 function preloadRoute(route: SlideRoute) {
   if (route.meta.preload !== false) {
     route.meta.__preloaded = true
     route.load()
   }
 }
-// preload current, prev and next slides
+// preload the slides around the current one
 watchEffect(() => {
-  preloadRoute(currentSlideRoute.value)
-  preloadRoute(prevRoute.value)
-  preloadRoute(nextRoute.value)
+  slides.value.filter(isNearby).forEach(preloadRoute)
 })
-// preload all slides after 3s
+// load the code of all slides after 3s, and mount the ones that ask for it
 watchEffect((onCleanup) => {
   const routes = slides.value
   const timeout = setTimeout(() => {
-    routes.forEach(preloadRoute)
+    for (const route of routes) {
+      if (route.meta.preload === true)
+        preloadRoute(route)
+      else if (route.meta.preload !== false)
+        route.load()
+    }
   }, 3000)
   onCleanup(() => clearTimeout(timeout))
 })
@@ -65,6 +89,7 @@ const loadedRoutes = computed(() => isPrintMode.value
 )
 
 function onAfterLeave() {
+  leavingRoute.value = undefined
   // After transition, we disable it so HMR won't trigger it again
   // We will turn it back on `nav.go` so the normal navigation would still work
   hmrSkipTransition.value = true
@@ -95,6 +120,7 @@ function onAfterLeave() {
         :clicks-context="isPrintMode && !isPrintWithClicks ? createFixedClicks(route, CLICKS_MAX) : getPrimaryClicks(route)"
         :route="route"
         :render-context="renderContext"
+        :mounted="isMounted(route)"
       />
     </template>
   </component>

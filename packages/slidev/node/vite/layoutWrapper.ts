@@ -2,7 +2,7 @@ import type { ResolvedSlidevOptions } from '@slidev/types'
 import type { Plugin } from 'vite'
 import { bold, gray, red, yellow } from 'ansis'
 import { toAtFS } from '../resolver'
-import { regexSlideSourceId, templateImportContextUtils, templateInitContext, templateInjectionMarker } from './common'
+import { getSlideIndexFromSourceId, regexSlideSourceId, templateImportContextUtils, templateInitContext, templateInjectionMarker } from './common'
 
 const RE_SCRIPT_SETUP_TAG = /^<script setup.*>/m
 
@@ -18,13 +18,11 @@ export function createLayoutWrapperPlugin(
         },
       },
       async handler(code, id) {
-        const match = id.match(regexSlideSourceId)
-        if (!match)
+        if (!id.endsWith('.md'))
           return
-        const [, no, type] = match
-        if (type !== 'md')
+        const index = getSlideIndexFromSourceId(data, id)
+        if (index == null)
           return
-        const index = +no - 1
         const layouts = await utils.getLayouts()
         const rawLayoutName = data.slides[index]?.frontmatter?.layout ?? data.slides[0]?.frontmatter?.defaults?.layout
         let layoutName = rawLayoutName || (index === 0

@@ -1,7 +1,7 @@
 import type { CodeblockTransformContext, CodeblockTransformer, ResolvedSlidevOptions } from '@slidev/types'
 import type { MarkdownExit } from 'markdown-exit'
 import { ensureSuffix } from '@antfu/utils'
-import { regexSlideSourceId } from '../../vite/common'
+import { getSlideIndexFromSourceId } from '../../vite/common'
 import magicMoveTransformer from './magic-move'
 import mermaidTransformer from './mermaid'
 import monacoTransformer from './monaco'
@@ -13,14 +13,14 @@ export function MarkdownItCodeblocks(md: MarkdownExit, options: ResolvedSlidevOp
   md.renderer.rules.fence = async function (tokens, idx, renderOptions, env, slf) {
     const token = tokens[idx]
 
-    const slideNo = env.id?.match(regexSlideSourceId)
+    const slideIndex = getSlideIndexFromSourceId(options.data, env.id)
     const ctx: CodeblockTransformContext = {
       info: token.info.trim(),
       code: token.content,
       fence: token.markup.length,
-      slide: slideNo
-        ? options.data.slides[slideNo[1] - 1]
-        : null,
+      slide: slideIndex == null
+        ? null
+        : options.data.slides[slideIndex] ?? null,
       options,
       renderHighlighted(override) {
         if (override.info != null)

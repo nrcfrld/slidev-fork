@@ -161,8 +161,9 @@ class: undefined # or string | string[] | Record<string, unknown>
 # override the title level for the <TitleRenderer> and <Toc> components
 # only if `title` has also been declared
 level: 1
-# mount this slide before entering
-preload: true
+# when this slide is mounted: by default, while within two slides of the current one;
+# `true` keeps it mounted once loaded (keeps editor or video state), `false` only while it's shown
+preload: undefined # or boolean
 # create a route alias that can be used in the URL or with the <Link> component
 routeAlias: undefined # or string
 # includes a markdown file

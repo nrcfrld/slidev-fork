@@ -4,7 +4,7 @@ import type { App } from 'vue'
 import { annotate } from '@slidev/rough-notation'
 import { computed, watchEffect } from 'vue'
 import { useNav } from '../composables/useNav'
-import { resolveClick } from './v-click'
+import { resolveClick, resolvedClickMap } from './v-click'
 
 export interface RoughDirectiveOptions extends Partial<RoughAnnotationConfig> {
   at: RawAtValue
@@ -166,6 +166,7 @@ export function createVMarkDirective() {
         },
 
         unmounted: (el) => {
+          resolvedClickMap.delete(el)
           // @ts-expect-error extra prop
           el.watchStopHandle?.()
         },

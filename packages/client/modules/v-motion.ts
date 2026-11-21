@@ -77,8 +77,19 @@ export function createVMotionDirectives() {
           const motion = el.motionInstance
           motion.clickIds = clicks.map(i => i.id)
           motion.set(variantInitial)
+          // Slides that are not shown only change between before and after the current
+          // one, so they don't re-apply their variant on every click elsewhere in the deck
+          const state = () => {
+            if (!clicksContext?.value || !['slide', 'presenter'].includes(renderContext?.value ?? ''))
+              return 'static'
+            if (isPrintMode.value || thisPage?.value === currentPage.value)
+              return `current:${currentClicks.value}`
+            return (thisPage?.value ?? -1) > currentPage.value
+              ? 'before'
+              : 'after'
+          }
           motion.watchStopHandle = watch(
-            [thisPage, currentPage, currentClicks].filter(Boolean),
+            state,
             () => {
               const visibility = resolvedClickMap.get(el)?.visibilityState.value ?? 'shown'
               if (!clicksContext?.value || !['slide', 'presenter'].includes(renderContext?.value ?? '')) {

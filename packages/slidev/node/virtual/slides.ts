@@ -5,6 +5,9 @@ export const VIRTUAL_SLIDE_PREFIX = '/@slidev/slides/'
 export const templateSlides: VirtualModuleTemplate = {
   id: '/@slidev/slides',
   async getContent({ data, utils }) {
+    // Import each slide's modules directly rather than through `/@slidev/slides/<no>/*`,
+    // which saves two requests per slide
+    const { md, frontmatter } = this.slideSourceIds
     const layouts = await utils.getLayouts()
     const statements = [
       `import { defineAsyncComponent, shallowRef } from 'vue'`,
@@ -23,10 +26,10 @@ export const templateSlides: VirtualModuleTemplate = {
       .map((_, idx) => {
         const no = idx + 1
         statements.push(
-          `import { meta as f${no} } from '${VIRTUAL_SLIDE_PREFIX}${no}/frontmatter'`,
+          `import { meta as f${no} } from ${JSON.stringify(frontmatter[idx])}`,
           // For some unknown reason, import error won't be caught by the error component. Catch it here.
           `const load${no} = async () => {`,
-          `  try { return componentsCache[${idx}] ??= await import('${VIRTUAL_SLIDE_PREFIX}${no}/md') }`,
+          `  try { return componentsCache[${idx}] ??= await import(${JSON.stringify(md[idx])}) }`,
           `  catch (e) { console.error('slide failed to load', e); return SlideError }`,
           `}`,
         )

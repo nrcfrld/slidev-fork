@@ -31,7 +31,7 @@ high-confidence security + correctness, then larger refactors. You may cherry-pi
 | 009 | `parseRangeString` lower-bound / NaN validation | P2 | S | LOW | — | TODO |
 | 010 | Harden `getSlidePath` against unknown slide | P2 | S | LOW-MED | — | TODO |
 | 011 | 404 on out-of-range slide-patch request | P3 | S | LOW | — | DONE (plan file removed) |
-| 012 | Fix no-op HMR `utils` refresh (missing `await`) | P2 | S | LOW | — | TODO |
+| 012 | Fix no-op HMR `utils` refresh (missing `await`) | P2 | S | LOW | — | DONE |
 | 013 | Free port + cleanup for build's temp servers | P2 | S-M | MED | — | TODO |
 | 014 | Confine deck-controlled file reads (snippets + `src:`) | P1 | M | MED | — | DONE (plan file removed) |
 | 015 | Validate paths in dev-server write sinks | P1 | S-M | MED | — | DONE (plan file removed) |
@@ -43,7 +43,7 @@ high-confidence security + correctness, then larger refactors. You may cherry-pi
 | 021 | Consolidate divergent `addToTree` TOC builders | P2 | M | MED | — | TODO |
 | 022 | Test the export pipeline (characterization tests) | P1 | M | LOW | — | TODO |
 | 023 | Decompose god functions in `export.ts`/`cli.ts` | P3 | L | MED | 022 | TODO |
-| 024 | Incremental HMR parse cache | P3 | L | MED | — | TODO |
+| 024 | Incremental HMR parse cache | P3 | L | MED | — | REJECTED (full reparse measured at 2.5–4.5 ms for 200–1,000 slides; not worth the cache risk) |
 | 025 | Guard `skills/`-vs-`docs/` drift in CI | P3 | S-M | LOW | — | TODO |
 
 Status values: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` (one-line reason) |

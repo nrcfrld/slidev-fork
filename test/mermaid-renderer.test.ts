@@ -14,6 +14,7 @@ describe('mermaid-renderer virtual module', () => {
     const context: VirtualModuleContext = {
       makeAbsoluteImportGlob: () => '/node_modules/.slidev/virtual/setups/mermaid-renderer.test.ts',
       resolve: async () => null,
+      slideSourceIds: { md: [], frontmatter: [] },
     }
     const content = template.getContent.call(context, {
       userRoot: '/user/project',

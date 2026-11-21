@@ -1,6 +1,6 @@
 import type { ClicksContext, NormalizedRangeClickValue, NormalizedSingleClickValue, RawAtValue, RawSingleAtValue, SlideRoute } from '@slidev/types'
 import type { MaybeRefOrGetter, Ref } from 'vue'
-import { clamp, sum } from '@antfu/utils'
+import { clamp } from '@antfu/utils'
 import { computed, isReadonly, onMounted, onUnmounted, ref, shallowReactive, toValue, watch } from 'vue'
 
 export function normalizeSingleAtValue(at: RawSingleAtValue): NormalizedSingleClickValue {
@@ -40,6 +40,14 @@ export function createClicksContextBase(
   const isMounted = ref(false)
   let relativeSizeMap: ClicksContext['relativeSizeMap'] = new Map()
   let maxMap: ClicksContext['maxMap'] = new Map()
+  // Running sum of relativeSizeMap, read by every relative `at` while registering
+  let relativeSizeSum = 0
+  // Cached, since every click element's computeds read `current`, which clamps to it
+  const total = computed(() => clicksTotalOverrides
+    ?? (isMounted.value
+      ? Math.max(0, ...maxMap.values())
+      : 0 /* fallback value */
+    ))
   const context: ClicksContext = {
     get current() {
       return clamp(+current.value, clicksStart, context.total)
@@ -63,9 +71,9 @@ export function createClicksContextBase(
     },
     setup() {
       onMounted(() => {
-        isMounted.value = true
-        // Convert maxMap to reactive
+        // Convert maxMap to reactive before `total` can read it again
         maxMap = shallowReactive(maxMap)
+        isMounted.value = true
         // Make sure the query is not greater than the total
         if (!isReadonly(current))
           context.current = current.value
@@ -73,6 +81,7 @@ export function createClicksContextBase(
       onUnmounted(() => {
         isMounted.value = false
         relativeSizeMap = new Map()
+        relativeSizeSum = 0
         maxMap = new Map()
       })
     },
@@ -146,22 +155,20 @@ export function createClicksContextBase(
       if (__DEV__ && isMounted.value)
         console.warn('[slidev] ClicksContext: Unexpected register after mounted')
       const { delta, max } = info
+      relativeSizeSum += delta - (relativeSizeMap.get(el) ?? 0)
       relativeSizeMap.set(el, delta)
       maxMap.set(el, max)
     },
     unregister(el) {
+      relativeSizeSum -= relativeSizeMap.get(el) ?? 0
       relativeSizeMap.delete(el)
       maxMap.delete(el)
     },
     get currentOffset() {
-      return sum(...relativeSizeMap.values())
+      return relativeSizeSum
     },
     get total() {
-      return clicksTotalOverrides
-        ?? (isMounted.value
-          ? Math.max(0, ...maxMap.values())
-          : 0 /* fallback value */
-        )
+      return total.value
     },
   }
   return context
