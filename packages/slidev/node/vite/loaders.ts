@@ -355,14 +355,12 @@ export function createSlidesLoader(
       if (matchSource) {
         const [, , type] = matchSource
         const idx = getSlideIndexFromSourceId(data, id)
-        const no = idx == null
-          ? 0
-          : idx + 1
         const slide = idx == null
           ? undefined
           : data.slides[idx]
-        if (!slide)
+        if (idx == null || !slide)
           return
+        const no = idx + 1
 
         if (type === 'md') {
           return {
