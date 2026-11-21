@@ -39,3 +39,10 @@ jobs:
         run: nr lint --fix
 
       - uses: autofix-ci/action@dd55f44df8f7cdb7a6bf74c78677eb8acd40cd0a
+        # Needs the autofix.ci GitHub App, which forks don't have installed
+        if: github.repository == 'slidevjs/slidev'
+
+      # Without the app, fail when lint would have changed files
+      - name: Check for lint fixes
+        if: github.repository != 'slidevjs/slidev'
+        run: git diff --exit-code
