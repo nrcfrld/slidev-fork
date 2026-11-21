@@ -6,7 +6,7 @@ import { yellow } from 'ansis'
 import lz from 'lz-string'
 import path from 'pathe'
 import { isPathInsideRoots } from '../utils'
-import { regexSlideSourceId } from '../vite/common'
+import { getSlideIndexFromSourceId } from '../vite/common'
 import { monacoWriterWhitelist } from '../vite/monacoWrite'
 
 const RE_NEWLINE = /\r?\n/
@@ -151,7 +151,7 @@ export function resolveSnippetImport(lineText: string, userRoot: string, slide: 
   return { content, filepath, lang, meta, src }
 }
 
-export default function MarkdownItSnippet(md: MarkdownExit, { userRoot, userWorkspaceRoot, roots, data: { watchFiles, slides } }: ResolvedSlidevOptions) {
+export default function MarkdownItSnippet(md: MarkdownExit, { userRoot, userWorkspaceRoot, roots, data }: ResolvedSlidevOptions) {
   const allowedRoots = [
     ...new Set([
       userWorkspaceRoot,
@@ -171,10 +171,11 @@ export default function MarkdownItSnippet(md: MarkdownExit, { userRoot, userWork
     if (silent)
       return true
 
-    const slideNo = state.env.id?.match(regexSlideSourceId)
-    const slide = slideNo
-      ? slides[slideNo[1] - 1]
-      : null
+    // Read `data` on each call: HMR replaces its slides and watchFiles
+    const slideIndex = getSlideIndexFromSourceId(data, state.env.id)
+    const slide = slideIndex == null
+      ? null
+      : data.slides[slideIndex]
 
     if (!slide) {
       console.warn(yellow(`[markdown-it-snippet] Snippet syntax is not supported in ${state.env.id || 'unknown source'}. Skipped.`))
@@ -205,8 +206,8 @@ export default function MarkdownItSnippet(md: MarkdownExit, { userRoot, userWork
       token.map = [startLine, startLine + 1]
     }
     else {
-      watchFiles[src] ??= new Set()
-      watchFiles[src].add(slide.index)
+      data.watchFiles[src] ??= new Set()
+      data.watchFiles[src].add(slide.index)
 
       const token = state.push('fence', 'code', 0)
       token.info = `${lang} ${meta}`.trim()

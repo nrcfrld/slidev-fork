@@ -16,7 +16,8 @@ import { templateMonacoRunDeps } from '../virtual/monaco-deps'
 import { templateMonacoTypes } from '../virtual/monaco-types'
 import { templateSlides, VIRTUAL_SLIDE_PREFIX } from '../virtual/slides'
 import { templateTitleRendererMd } from '../virtual/titles'
-import { regexSlideFacadeId, regexSlideReqPath, regexSlideSourceId } from './common'
+import { getSlideIndexFromSourceId, regexSlideFacadeId, regexSlideReqPath, regexSlideSourceId, setSlideMdKeys } from './common'
+import { matchSlides } from './matchSlides'
 
 export function createSlidesLoader(
   options: ResolvedSlidevOptions,
@@ -38,19 +39,29 @@ export function createSlidesLoader(
     md: string[]
     frontmatter: string[]
   }
-  let sourceIds = resolveSourceIds(data)
+  // Markdown modules are keyed so that they survive other slides moving: see `setSlideMdKeys`.
+  // Frontmatter modules stay keyed by position, since they hold the slide number.
+  let mdKeys = data.slides.map((_, i) => i + 1)
+  let nextMdKey = mdKeys.length + 1
+  setSlideMdKeys(data, mdKeys)
+  let sourceIds = resolveSourceIds(data, mdKeys)
 
-  function resolveSourceIds(data: SlidevData) {
+  function resolveSourceIds(data: SlidevData, mdKeys: number[]) {
     const ids: ResolvedSourceIds = {
       md: [],
       frontmatter: [],
     }
-    for (const type of ['md', 'frontmatter'] as const) {
-      for (let i = 0; i < data.slides.length; i++) {
-        ids[type].push(`${data.slides[i].source.filepath}__slidev_${i + 1}.${type}`)
-      }
+    for (let i = 0; i < data.slides.length; i++) {
+      const filepath = data.slides[i].source.filepath
+      ids.md.push(`${filepath}__slidev_${mdKeys[i]}.md`)
+      ids.frontmatter.push(`${filepath}__slidev_${i + 1}.frontmatter`)
     }
     return ids
+  }
+
+  // What the compiled markdown module of a slide depends on
+  function slideSignature(slide: SlideInfo) {
+    return `${slide.source.filepath}\0${slide.title?.trim()}\0${JSON.stringify(slide.frontmatter)}\0${slide.content.trim()}`
   }
 
   function updateServerWatcher() {
@@ -168,7 +179,28 @@ export function createSlidesLoader(
 
       const moduleIds = new Set<string>()
 
-      const newSourceIds = resolveSourceIds(newData)
+      // Old index of the slide each new slide continues, so moved slides keep their markdown module
+      const matches = matchSlides(data.slides.map(slideSignature), newData.slides.map(slideSignature))
+      const newMdKeys = matches.map(o => o === -1
+        ? nextMdKey++
+        : mdKeys[o])
+      const defaultsChanged = !equal(data.headmatter.defaults, newData.headmatter.defaults)
+      const mdReloadIndexes = new Set<number>()
+      matches.forEach((o, i) => {
+        if (o === -1)
+          return
+        if (
+          defaultsChanged
+          || hmrSlidesIndexes.has(o)
+          || slideSignature(data.slides[o]) !== slideSignature(newData.slides[i])
+          // The layout wrapper gives the first slide its own default layout and props
+          || (o === 0) !== (i === 0)
+        ) {
+          mdReloadIndexes.add(i)
+        }
+      })
+
+      const newSourceIds = resolveSourceIds(newData, newMdKeys)
       for (const type of ['md', 'frontmatter'] as const) {
         const old = sourceIds[type]
         const newIds = newSourceIds[type]
@@ -184,7 +216,7 @@ export function createSlidesLoader(
         moduleIds.add(templateSlides.id)
       }
 
-      if (!equal(data.headmatter.defaults, newData.headmatter.defaults)) {
+      if (defaultsChanged) {
         moduleIds.add(templateSlides.id)
         range(data.slides.length).map(i => hmrSlidesIndexes.add(i))
       }
@@ -241,6 +273,8 @@ export function createSlidesLoader(
 
       Object.assign(data, newData)
       Object.assign(utils, createDataUtils(options))
+      mdKeys = newMdKeys
+      setSlideMdKeys(data, mdKeys)
 
       if (titlesChanged)
         moduleIds.add(templateTitleRendererMd.id)
@@ -251,7 +285,7 @@ export function createSlidesLoader(
 
       const reloadBeforeOthers: ModuleNode[] = []
       const vueModules: ModuleNode[] = []
-      for (const idx of hmrSlidesIndexes) {
+      for (const idx of mdReloadIndexes) {
         const main = ctx.server.moduleGraph.getModuleById(sourceIds.md[idx])
         if (main) {
           const styles = [...main.clientImportedModules].filter(m => m.id?.includes(`&type=style`))
@@ -319,9 +353,14 @@ export function createSlidesLoader(
 
       const matchSource = id.match(regexSlideSourceId)
       if (matchSource) {
-        const [, no, type] = matchSource
-        const idx = +no - 1
-        const slide = data.slides[idx]
+        const [, , type] = matchSource
+        const idx = getSlideIndexFromSourceId(data, id)
+        const no = idx == null
+          ? 0
+          : idx + 1
+        const slide = idx == null
+          ? undefined
+          : data.slides[idx]
         if (!slide)
           return
 

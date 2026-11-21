@@ -4,7 +4,7 @@ import MagicString from 'magic-string-stack'
 import Markdown from 'unplugin-vue-markdown/vite'
 import setupTransformers from '../setups/transformers'
 import { useMarkdownItPlugins } from '../syntax'
-import { regexSlideSourceId } from './common'
+import { getSlideIndexFromSourceId } from './common'
 
 const RE_MD_EXT = /\.md$/
 
@@ -50,15 +50,15 @@ export async function createMarkdownPlugin(
 
         code = await mdOptions?.transforms?.before?.(code, id) ?? code
 
-        const match = id.match(regexSlideSourceId)
-        if (!match)
+        const index = getSlideIndexFromSourceId(options.data, id)
+        if (index == null)
           return code
 
         const s = new MagicString(code)
         markdownTransformMap.set(id, s)
         const ctx: MarkdownTransformContext = {
           s,
-          slide: options.data.slides[+match[1] - 1],
+          slide: options.data.slides[index],
           options,
         }
 
