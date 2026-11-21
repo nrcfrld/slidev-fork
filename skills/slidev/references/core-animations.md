@@ -145,7 +145,22 @@ transition: fade
 - `fade` / `fade-out`
 - `slide-left` / `slide-right`
 - `slide-up` / `slide-down`
+- `zoom-in` / `zoom-out` (camera push in / pull out)
+- `blur` (focus pull), `rise` (lift in)
+- `iris` (circle reveal)
+- `wipe-left` / `wipe-right` / `wipe-up` / `wipe-down` (edge reveal)
 - `view-transition` (View Transitions API)
+
+### Duration and Easing
+
+```md
+---
+transition: zoom-in 800ms expo   # name, then optional duration and easing
+---
+```
+
+Easing: any CSS easing, or `smooth`, `expo`, `snappy`. Object form: `{ name, duration, easing }`.
+Custom transitions can use `var(--slidev-transition-duration)` and `var(--slidev-transition-easing)`.
 
 ### Directional Transitions
 

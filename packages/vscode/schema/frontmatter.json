@@ -20,8 +20,8 @@
               "type": "null"
             }
           ],
-          "description": "Page transition, powered by Vue's `<TransitionGroup/>`\n\nBuilt-in transitions:\n- fade\n- fade-out\n- slide-left\n- slide-right\n- slide-up\n- slide-down\n- view-transition\n\nSee https://sli.dev/guide/animations.html#pages-transitions\n\nSee https://vuejs.org/guide/built-ins/transition.html",
-          "markdownDescription": "Page transition, powered by Vue's `<TransitionGroup/>`\n\nBuilt-in transitions:\n- fade\n- fade-out\n- slide-left\n- slide-right\n- slide-up\n- slide-down\n- view-transition\n\nSee https://sli.dev/guide/animations.html#pages-transitions\n\nSee https://vuejs.org/guide/built-ins/transition.html"
+          "description": "Page transition, powered by Vue's `<TransitionGroup/>`\n\nBuilt-in transitions:\n- fade\n- fade-out\n- slide-left\n- slide-right\n- slide-up\n- slide-down\n- zoom-in\n- zoom-out\n- blur\n- rise\n- iris\n- wipe-left\n- wipe-right\n- wipe-up\n- wipe-down\n- view-transition\n\nA duration and an easing can follow the name, for example `zoom-in 800ms expo`.\n\nSee https://sli.dev/guide/animations.html#pages-transitions\n\nSee https://vuejs.org/guide/built-ins/transition.html",
+          "markdownDescription": "Page transition, powered by Vue's `<TransitionGroup/>`\n\nBuilt-in transitions:\n- fade\n- fade-out\n- slide-left\n- slide-right\n- slide-up\n- slide-down\n- zoom-in\n- zoom-out\n- blur\n- rise\n- iris\n- wipe-left\n- wipe-right\n- wipe-up\n- wipe-down\n- view-transition\n\nA duration and an easing can follow the name, for example `zoom-in 800ms expo`.\n\nSee https://sli.dev/guide/animations.html#pages-transitions\n\nSee https://vuejs.org/guide/built-ins/transition.html"
         },
         "layout": {
           "anyOf": [
@@ -135,31 +135,31 @@
         "slide-down",
         "slide-left",
         "slide-right",
+        "zoom-in",
+        "zoom-out",
+        "blur",
+        "rise",
+        "iris",
+        "wipe-left",
+        "wipe-right",
+        "wipe-up",
+        "wipe-down",
         "view-transition"
       ]
     },
     "TransitionGroupProps": {
       "type": "object",
       "properties": {
-        "appear": {
-          "type": "boolean"
-        },
-        "persisted": {
-          "type": "boolean"
-        },
-        "tag": {
+        "name": {
           "type": "string"
-        },
-        "moveClass": {
-          "type": "string"
-        },
-        "css": {
-          "type": "boolean"
         },
         "duration": {
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "type": "string"
             },
             {
               "type": "object",
@@ -176,7 +176,29 @@
                 "leave"
               ]
             }
-          ]
+          ],
+          "description": "Duration in milliseconds, or a CSS time such as `800ms` or `1.2s`",
+          "markdownDescription": "Duration in milliseconds, or a CSS time such as `800ms` or `1.2s`"
+        },
+        "easing": {
+          "type": "string",
+          "description": "CSS easing, or one of `smooth`, `expo` and `snappy`",
+          "markdownDescription": "CSS easing, or one of `smooth`, `expo` and `snappy`"
+        },
+        "appear": {
+          "type": "boolean"
+        },
+        "persisted": {
+          "type": "boolean"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "moveClass": {
+          "type": "string"
+        },
+        "css": {
+          "type": "boolean"
         },
         "enterFromClass": {
           "type": "string"

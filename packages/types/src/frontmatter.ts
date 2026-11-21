@@ -604,7 +604,7 @@ export interface ShikiMagicMoveOptions {
   enhanceMatching?: boolean
 }
 
-export type BuiltinSlideTransition = 'fade' | 'fade-out' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'view-transition'
+export type BuiltinSlideTransition = 'fade' | 'fade-out' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'zoom-in' | 'zoom-out' | 'blur' | 'rise' | 'iris' | 'wipe-left' | 'wipe-right' | 'wipe-up' | 'wipe-down' | 'view-transition'
 
 export interface TransitionOptions {
   /**
@@ -617,7 +617,18 @@ export interface TransitionOptions {
    * - slide-right
    * - slide-up
    * - slide-down
+   * - zoom-in
+   * - zoom-out
+   * - blur
+   * - rise
+   * - iris
+   * - wipe-left
+   * - wipe-right
+   * - wipe-up
+   * - wipe-down
    * - view-transition
+   *
+   * A duration and an easing can follow the name, for example `zoom-in 800ms expo`.
    *
    * See https://sli.dev/guide/animations.html#pages-transitions
    *
@@ -627,15 +638,23 @@ export interface TransitionOptions {
 }
 
 export interface TransitionGroupProps {
+  name?: string
+  /**
+   * Duration in milliseconds, or a CSS time such as `800ms` or `1.2s`
+   */
+  duration?: number | string | {
+    enter: number
+    leave: number
+  }
+  /**
+   * CSS easing, or one of `smooth`, `expo` and `snappy`
+   */
+  easing?: string
   appear?: boolean
   persisted?: boolean
   tag?: string
   moveClass?: string
   css?: boolean
-  duration?: number | {
-    enter: number
-    leave: number
-  }
   enterFromClass?: string
   enterActiveClass?: string
   enterToClass?: string

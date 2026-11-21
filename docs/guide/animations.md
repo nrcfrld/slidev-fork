@@ -415,7 +415,42 @@ This will give you a nice sliding effects on slide switching. Setting it in the 
 - `slide-right` - Slides to the right (slide to left when going backward)
 - `slide-up` - Slides to the top (slide to bottom when going backward)
 - `slide-down` - Slides to the bottom (slide to top when going backward)
+- `zoom-in` - Pushes in: the old slide grows and fades while the new one comes forward (`zoom-out` when going backward)
+- `zoom-out` - Pulls out: the reverse of `zoom-in`
+- `blur` - Crossfades through a blur, like a focus pull
+- `rise` - The new slide lifts in while the old one fades
+- `iris` - The new slide is revealed through a growing circle
+- `wipe-left`, `wipe-right`, `wipe-up`, `wipe-down` - The new slide is revealed from one edge (the opposite edge when going backward)
 - `view-transition` - Via the view transitions API
+
+### Duration and Easing {#transition-timing}
+
+Add a duration and an easing after the transition name:
+
+```md
+---
+transition: zoom-in 800ms expo
+---
+```
+
+The duration can be in `ms` or `s`. The easing can be any CSS easing, such as `ease-in-out` or `cubic-bezier(0.2, 0, 0, 1)`, or one of these named curves:
+
+- `smooth` - Slow start and end, for calm transitions
+- `expo` - Fast start with a long, soft landing
+- `snappy` - Quick and decisive
+
+Both are optional, and you can also write them as fields:
+
+```md
+---
+transition:
+  name: wipe-left
+  duration: 1.2s
+  easing: smooth
+---
+```
+
+They also apply to your [custom transitions](#custom-transitions) through the `--slidev-transition-duration` and `--slidev-transition-easing` CSS variables.
 
 ### View Transition API {#view-transitions}
 
@@ -457,7 +492,7 @@ and then in your custom stylesheets:
 ```css
 .my-transition-enter-active,
 .my-transition-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity var(--slidev-transition-duration) var(--slidev-transition-easing);
 }
 
 .my-transition-enter-from,
